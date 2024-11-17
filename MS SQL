@@ -1,0 +1,15 @@
+create database restart;
+
+go
+
+use restart;
+
+drop database template;
+
+create database template;
+
+go
+
+use template;
+
+drop database restart;
