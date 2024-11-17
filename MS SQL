@@ -13,3 +13,30 @@ go
 use template;
 
 drop database restart;
+
+create table Left_part
+(
+byte_1                            tinyint not null primary key,
+byte_2                            smallint,
+byte_4                            int,
+byte_8                            bigint,
+true_false                        bit,
+byte_5_17                         decimal,
+byte_5_17_                        numeric,
+byte_8_                           money,
+byte_4_                           smallmoney,
+byte_4_8                          float,
+byte_4__                          real,
+YYYY_MM_DD                        date,
+hh_mm_ss_nnnnnnn                  time,
+YYYY_MM_DD_hh_mm_ss_nnnnnnn       datetime2,
+YYYY_MM_DD_hh_mm_ss_nnnnnnn_hh_mm datetimeoffset,
+yyyy_MM_dd_HH_mm_ss_mmm           datetime,
+yyyy_MM_dd_HH_mm_ss               smalldatetime,
+fixed_length                      char(10),
+length                            varchar(10),
+fixed_length_rus                  nchar(10),
+length_rus                        nvarchar(10),
+fixed_byte_length                 binary,
+byte_length                       varbinary,
+)
