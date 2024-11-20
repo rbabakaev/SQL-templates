@@ -16,7 +16,8 @@ drop database restart;
 
 create table Left_part
 (
-byte_1                            tinyint not null primary key,
+pk                                int not null primary key,
+byte_1                            tinyint,
 byte_2                            smallint,
 byte_4                            int,
 byte_8                            bigint,
@@ -39,4 +40,16 @@ fixed_length_rus                  nchar(10),
 length_rus                        nvarchar(10),
 fixed_byte_length                 binary,
 byte_length                       varbinary,
+)
+
+create table Right_part
+(
+pk                                int not null primary key
+)
+
+create table Many_to_many
+(
+pk                                int not null primary key,
+left_pk                           int REFERENCES Left_part (pk),
+right_pk                          int REFERENCES Right_part (pk)
 )
