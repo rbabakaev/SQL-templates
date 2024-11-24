@@ -1,0 +1,127 @@
+#CREATE, INSERT##########################################################
+
+create database restart;
+
+use restart;
+drop database template;
+create database template;
+
+use template;
+drop database restart;
+
+create table Left_part (
+pk                                int not null primary key AUTO_INCREMENT,
+byte_1                            tinyint,
+byte_2                            smallint,
+byte_4                            int,
+byte_8                            bigint,
+true_false                        bit,
+byte_5_17                         decimal,
+byte_5_17_                        numeric,
+byte_4_8                          float,
+byte_4__                          real,
+YYYY_MM_DD                        date,
+hh_mm_ss_nnnnnnn                  time,
+yyyy_MM_dd_HH_mm_ss_mmm           datetime,
+fixed_length                      char(10),
+length                            varchar(10),
+fixed_length_rus                  nchar(10),
+length_rus                        nvarchar(10),
+fixed_byte_length                 binary,
+byte_length                       varbinary(10)
+);
+
+INSERT INTO Left_part (byte_1, byte_2, byte_4,     byte_8,              true_false, byte_5_17, byte_5_17_, byte_4_8, byte_4__, YYYY_MM_DD,   hh_mm_ss_nnnnnnn,   yyyy_MM_dd_HH_mm_ss_mmm,   fixed_length, length,  fixed_length_rus, length_rus) VALUES
+                      (127,    32767,  2147483647, 9223372036854775807, 1,          1.2,       3.4,        1.2,      3.4,      '2024-11-20', '17:50:00.1234567', '2024-11-20T17:50:00.123', 'eeeeeeeeee', 'eeeee', 'уууууууууу',     'ууууу'),
+                      (127,    32767,  2147483647, 9223372036854775807, 1,          1.2,       3.4,        1.2,      3.4,      '2024-11-20', '17:50:00.1234567', '2024-11-20T17:50:00.123', 'eeeeeeeeee', 'eeeee', 'уууууууууу',     'ууууу');
+
+create table Right_part (
+pk           int not null primary key AUTO_INCREMENT,
+first_param  int,
+second_param nvarchar(10),
+third_param  date
+);
+
+INSERT INTO Right_part (first_param, second_param, third_param) VALUES 
+(3, 'q', '2024-11-20'),
+(2, 'w', '2024-11-20'),
+(1, 'e', '2024-11-20');
+
+create table Many_to_many (
+pk       int not null primary key AUTO_INCREMENT,
+left_pk  int REFERENCES Left_part(pk) ON DELETE CASCADE,
+right_pk int REFERENCES Right_part(pk)
+);
+
+INSERT INTO Many_to_many (left_pk, right_pk) VALUES  
+(1, 1),
+(2, 2),
+(2, 3);
+
+#VAR#####################################################################
+
+SET @Var = 1;
+
+#SELECT##################################################################
+
+SELECT * FROM Left_part 
+INNER JOIN Many_to_many
+ON (Left_part.pk = Many_to_many.left_pk)
+INNER JOIN Right_part
+ON (Many_to_many.right_pk = Right_part.pk)
+WHERE Left_part.pk = 2;
+
+#UPDATE##################################################################
+
+SET SQL_SAFE_UPDATES = 0;
+UPDATE Left_part SET byte_1 = 126 WHERE byte_1 = 127;
+SELECT * FROM Left_part;
+
+#DELETE##################################################################
+
+DELETE FROM Left_part WHERE byte_1 = 126;
+SELECT * FROM Left_part;
+
+#FUNCTION################################################################
+
+DELIMITER //
+CREATE FUNCTION get_max(length_ VARCHAR(50))
+RETURNS INT DETERMINISTIC
+BEGIN
+   SELECT MAX(byte_4) INTO @result
+   FROM Left_part
+   WHERE length = length_;
+   RETURN @result;
+END//
+DELIMITER ;
+
+SET @retee = 0;
+SELECT get_max('eeeee') INTO @retee;
+SELECT @retee;
+
+#PROCEDURE###############################################################
+
+DELIMITER //
+CREATE PROCEDURE insert_conn_infoww (left_pk_ INT, right_pk_ INT)
+BEGIN
+    INSERT INTO Many_to_many (left_pk, right_pk)
+    VALUES (left_pk_, right_pk_);
+END //
+DELIMITER ;
+
+CALL insert_conn_infoww(1, 2);
+SELECT * FROM Many_to_many;
+
+#TRIGGER#################################################################
+
+DELIMITER //
+CREATE TRIGGER Right_part_INSERT_UPDATE BEFORE INSERT ON Right_part
+FOR EACH ROW 
+BEGIN
+  SET NEW.first_param=30;
+END //
+DELIMITER ;
+
+INSERT INTO Right_part (first_param, second_param, third_param) VALUES 
+(1, 'e', '2024-11-20');
+SELECT * FROM Right_part;
