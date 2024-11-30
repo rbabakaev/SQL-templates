@@ -1,17 +1,17 @@
+CREATE DATABASE restart;
+GO
+USE restart;
+DROP DATABASE template;
+CREATE DATABASE template;
+GO
+
+USE template;
+DROP DATABASE restart;
+
 --CREATE, INSERT-----------------------------------------------------------------------------------
 
-create database restart;
-go
-use restart;
-drop database template;
-create database template;
-go
-
-use template;
-drop database restart;
-
-create table Left_part (
-pk                                int not null primary key IDENTITY,
+CREATE TABLE Left_part (
+pk                                int NOT NULL PRIMARY KEY IDENTITY,
 byte_1                            tinyint,
 byte_2                            smallint,
 byte_4                            int,
@@ -41,8 +41,8 @@ INSERT INTO Left_part (byte_1, byte_2, byte_4,     byte_8,              true_fal
                       (255,    32767,  2147483647, 9223372036854775807, 1,          1.2,       3.4,        922337203685477.5807, 214748.3647, 1.2,      3.4,      '2024-11-20', '17:50:00.1234567', '2024-11-20 17:50:00.1234567', '2024-11-20 17:50:00.1234567 +1:0', '2024-11-20T17:50:00.123', '2024-11-20T17:50:00', 'eeeeeeeeee', 'eeeee', 'уууууууууу',     'ууууу'),
                       (253,    32767,  2147483647, 9223372036854775807, 1,          1.2,       3.4,        922337203685477.5807, 214748.3647, 1.2,      3.4,      '2024-11-20', '17:50:00.1234567', '2024-11-20 17:50:00.1234567', '2024-11-20 17:50:00.1234567 +1:0', '2024-11-20T17:50:00.123', '2024-11-20T17:50:00', 'eeeeeeeeee', 'eeeee', 'уууууууууу',     'ууууу');
 
-create table Right_part (
-pk           int not null primary key IDENTITY,
+CREATE TABLE Right_part (
+pk           int NOT NULL PRIMARY KEY IDENTITY,
 first_param  int,
 second_param nvarchar(10),
 third_param  date
@@ -53,10 +53,10 @@ INSERT INTO Right_part VALUES
 (2, 'w', '2024-11-20'),
 (1, 'e', '2024-11-20');
 
-create table Many_to_many (
-pk       int not null primary key IDENTITY,
-left_pk  int REFERENCES Left_part(pk) ON DELETE CASCADE,
-right_pk int REFERENCES Right_part(pk)
+CREATE TABLE Many_to_many (
+pk       int NOT NULL PRIMARY KEY IDENTITY,
+left_pk  int REFERENCES Left_part(pk)  ON DELETE CASCADE,
+right_pk int REFERENCES Right_part(pk) ON DELETE CASCADE
 )
 
 INSERT INTO Many_to_many VALUES 
@@ -66,8 +66,8 @@ INSERT INTO Many_to_many VALUES
 
 --VAR----------------------------------------------------------------------------------------------
 
-DECLARE @Var INT;
-SET @Var = 1;
+DECLARE @var int;
+SET @var = 1;
 
 --SELECT-------------------------------------------------------------------------------------------
 
@@ -91,7 +91,7 @@ SELECT * FROM Left_part
 --FUNCTION-----------------------------------------------------------------------------------------
 
 GO
-CREATE FUNCTION get_max_money (@length VARCHAR(50))
+CREATE FUNCTION get_max_money (@length varchar(50))
 RETURNS money
 AS
 BEGIN
@@ -104,16 +104,16 @@ END
 
 GO
 
-DECLARE @retee money;
-EXEC @retee = get_max_money @length = 'eeeee';
-SELECT @retee;
+DECLARE @max_num money;
+EXEC @max_num = get_max_money @length = 'eeeee';
+SELECT @max_num;
 
 --PROCEDURE-----------------------------------------------------------------------------------------
 
 GO
 CREATE PROCEDURE insert_conn_info
-    @left_pk INT,
-    @right_pk INT
+    @left_pk int,
+    @right_pk int
 AS
 BEGIN
     INSERT INTO Many_to_many
@@ -126,13 +126,13 @@ SELECT * FROM Many_to_many
 --TRIGGER------------------------------------------------------------------------------------------
 
 GO
-CREATE TRIGGER Right_part_INSERT_UPDATE
+CREATE TRIGGER Right_part_insert_update
 ON Right_part
 AFTER INSERT, UPDATE
 AS
 UPDATE Right_part
 SET first_param = 30
-WHERE pk = (SELECT pk FROM inserted)
+WHERE pk = (SELECT pk FROM INSERTED)
 
 INSERT INTO Right_part (second_param, third_param) VALUES 
 ('e', '2024-11-20');
